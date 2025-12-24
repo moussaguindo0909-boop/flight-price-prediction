@@ -113,25 +113,24 @@
             <input type="range" name="days_left" min="0" max="180" value="30" oninput="updateDaysValue(this.value)">
             <div>Jours : <span id="days_display">30</span></div>
 
-            <button type="submit">Prédire le prix 💰</button>
-        </form>
+    <button type="submit">Prédire le prix 💰</button>
+</form>
 
-        <script>
-            // Récupérer le dictionnaire de durées envoyé par Flask
-            const durationDict = JSON.parse('{{ duration_dict | tojson | safe }}');
-            function updateDuration() {
-                const dep = document.getElementById("source_city").value;
-                const arr = document.getElementById("destination_city").value;
-                const key = dep + "-" + arr; // correspond au format des clés du dictionnaire
+<script>
+     const durationDict = JSON.parse('{{ duration_dict | tojson | safe }}');
 
-                const input = document.getElementById("duration");
-                input.value = durationDict[key] ? durationDict[key].toFixed(1) : 3; // durée moyenne ou défaut
-            }
+    function updateDuration() {
+        const dep = document.getElementById("source_city").value;
+        const arr = document.getElementById("destination_city").value;
+        const key = dep + "-" + arr;
 
-            window.addEventListener('DOMContentLoaded', (event) => {
-                updateDuration(); // Initialiser la durée au chargement
-            });
-        </script>
+        const input = document.getElementById("duration");
+        input.value = durationDict[key] ? durationDict[key].toFixed(1) : 3;
+    }
+
+    window.onload = updateDuration;
+</script>
+
 
         {% if price %}
             {% if price < 100 %}

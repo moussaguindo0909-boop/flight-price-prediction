@@ -4,38 +4,24 @@ import pickle
 
 app = Flask(__name__)
 
-# Charger le modèle et les colonnes
+# Charger modèle et colonnes
 with open("model.pkl", "rb") as f:
     model = pickle.load(f)
+
 with open("columns.pkl", "rb") as f:
     model_columns = pickle.load(f)
 
-
-# Charger dataset pour les menus déroulants
-airlines = [
-    "Air India", "IndiGo", "Vistara", "SpiceJet", "GO_FIRST"
-]
-
-sources = [
-    "Delhi", "Mumbai", "Bangalore", "Kolkata", "Hyderabad", "Chennai"
-]
-
-destinations = [
-    "Delhi", "Mumbai", "Bangalore", "Kolkata", "Hyderabad", "Chennai"
-]
-
+# Données pour formulaires
+airlines = ["Air India", "IndiGo", "Vistara", "SpiceJet", "GO_FIRST"]
+sources = ["Delhi", "Mumbai", "Bangalore", "Kolkata", "Hyderabad", "Chennai"]
+destinations = sources
 classes = ["Economy", "Business"]
-
 stops = ["zero", "one", "two_or_more"]
 
-departure_times = [
-    "Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"
-]
+departure_times = ["Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"]
+arrival_times = departure_times
 
-arrival_times = [
-    "Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"
-]
-# Dictionnaire des durées moyennes de vol entre villes
+# Durées moyennes
 duration_dict = {
     "Delhi-Mumbai": 2.0,
     "Delhi-Bangalore": 2.5,
@@ -54,45 +40,48 @@ duration_dict = {
     "Hyderabad-Chennai": 1.2
 }
 
+cat_columns = [
+    "airline", "source_city", "departure_time",
+    "stops", "arrival_time", "destination_city", "class"
+]
 
-
-# Colonnes catégorielles pour get_dummies
-cat_columns = ['airline', 'source_city', 'departure_time', 'stops', 
-               'arrival_time', 'destination_city', 'class']
-
-# Taux de conversion inr → TND
-taux_inr_tnd = 0.096 
+# INR → TND
+TAUX_INR_TND = 0.096
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    price = ""
+    price = None
+
     if request.method == "POST":
-        # Récupérer les valeurs du formulaire
-        input_data = {}
-        for col in cat_columns:
-            input_data[col] = request.form[col]
+        try:
+            input_data = {col: request.form[col] for col in cat_columns}
 
-        # Récupérer durée et jours avant départ
-        input_data['duration'] = float(request.form['duration'])
-        input_data['days_left'] = int(request.form['days_left'])
-        
-        # Créer un DataFrame pour le modèle
-        df_input = pd.DataFrame([input_data])
-        df_input = pd.get_dummies(df_input)
+            duration = float(request.form["duration"])
+            days_left = int(request.form["days_left"])
 
-        # Ajouter les colonnes manquantes pour correspondre au modèle
-        for col in model_columns:
-            if col not in df_input.columns:
-                df_input[col] = 0
-        df_input = df_input[model_columns]
+            # Sécurité
+            if duration <= 0 or duration > 20:
+                duration = 3
 
-        # Prédire le prix en XOF
-        price_inr = model.predict(df_input)[0]
+            input_data["duration"] = duration
+            input_data["days_left"] = days_left
 
-        # Convertir en dinar tunisien et arrondir
-        price = round(price_inr * taux_inr_tnd, 2)
+            df = pd.DataFrame([input_data])
+            df = pd.get_dummies(df)
 
-    # Renvoyer le template avec toutes les options
+            for col in model_columns:
+                if col not in df.columns:
+                    df[col] = 0
+
+            df = df[model_columns]
+
+            price_inr = model.predict(df)[0]
+            price = round(price_inr * TAUX_INR_TND, 2)
+
+        except Exception as e:
+            print("Erreur prédiction :", e)
+            price = None
+
     return render_template(
         "index.html",
         price=price,
@@ -107,4 +96,4 @@ def index():
     )
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
