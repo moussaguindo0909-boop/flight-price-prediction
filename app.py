@@ -37,22 +37,23 @@ arrival_times = [
 ]
 # Dictionnaire des durées moyennes de vol entre villes
 duration_dict = {
-    ("Delhi", "Mumbai"): 120,
-    ("Delhi", "Bangalore"): 150,
-    ("Delhi", "Kolkata"): 130,
-    ("Delhi", "Hyderabad"): 140,
-    ("Delhi", "Chennai"): 160,
-    ("Mumbai", "Bangalore"): 100,
-    ("Mumbai", "Kolkata"): 140,
-    ("Mumbai", "Hyderabad"): 110,
-    ("Mumbai", "Chennai"): 120,
-    ("Bangalore", "Kolkata"): 160,
-    ("Bangalore", "Hyderabad"): 90,
-    ("Bangalore", "Chennai"): 80,
-    ("Kolkata", "Hyderabad"): 150,
-    ("Kolkata", "Chennai"): 140,
-    ("Hyderabad", "Chennai"): 70
+    "Delhi-Mumbai": 120,
+    "Delhi-Bangalore": 150,
+    "Delhi-Kolkata": 130,
+    "Delhi-Hyderabad": 140,
+    "Delhi-Chennai": 160,
+    "Mumbai-Bangalore": 100,
+    "Mumbai-Kolkata": 140,
+    "Mumbai-Hyderabad": 110,
+    "Mumbai-Chennai": 120,
+    "Bangalore-Kolkata": 160,
+    "Bangalore-Hyderabad": 90,
+    "Bangalore-Chennai": 80,
+    "Kolkata-Hyderabad": 150,
+    "Kolkata-Chennai": 140,
+    "Hyderabad-Chennai": 70
 }
+
 
 # Colonnes catégorielles pour get_dummies
 cat_columns = ['airline', 'source_city', 'departure_time', 'stops', 
