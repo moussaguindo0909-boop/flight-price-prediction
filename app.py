@@ -10,18 +10,49 @@ with open("model.pkl", "rb") as f:
 with open("columns.pkl", "rb") as f:
     model_columns = pickle.load(f)
 
-# Charger dataset pour les menus déroulants
-df_raw = pd.read_csv("Clean_Dataset.csv")
-duration_dict = df_raw.groupby(['source_city', 'destination_city'])['duration'].mean().to_dict()
-duration_dict = {f"{k[0]}-{k[1]}": v for k, v in duration_dict.items()}
 
-airlines = sorted(df_raw['airline'].unique())
-sources = sorted(df_raw['source_city'].unique())
-destinations = sorted(df_raw['destination_city'].unique())
-classes = sorted(df_raw['class'].unique())
-stops = sorted(df_raw['stops'].unique())
-departure_times = sorted(df_raw['departure_time'].unique())
-arrival_times = sorted(df_raw['arrival_time'].unique())
+# Charger dataset pour les menus déroulants
+airlines = [
+    "Air India", "IndiGo", "Vistara", "SpiceJet", "GO_FIRST"
+]
+
+sources = [
+    "Delhi", "Mumbai", "Bangalore", "Kolkata", "Hyderabad", "Chennai"
+]
+
+destinations = [
+    "Delhi", "Mumbai", "Bangalore", "Kolkata", "Hyderabad", "Chennai"
+]
+
+classes = ["Economy", "Business"]
+
+stops = ["zero", "one", "two_or_more"]
+
+departure_times = [
+    "Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"
+]
+
+arrival_times = [
+    "Early_Morning", "Morning", "Afternoon", "Evening", "Night", "Late_Night"
+]
+# Dictionnaire des durées moyennes de vol entre villes
+duration_dict = {
+    ("Delhi", "Mumbai"): 120,
+    ("Delhi", "Bangalore"): 150,
+    ("Delhi", "Kolkata"): 130,
+    ("Delhi", "Hyderabad"): 140,
+    ("Delhi", "Chennai"): 160,
+    ("Mumbai", "Bangalore"): 100,
+    ("Mumbai", "Kolkata"): 140,
+    ("Mumbai", "Hyderabad"): 110,
+    ("Mumbai", "Chennai"): 120,
+    ("Bangalore", "Kolkata"): 160,
+    ("Bangalore", "Hyderabad"): 90,
+    ("Bangalore", "Chennai"): 80,
+    ("Kolkata", "Hyderabad"): 150,
+    ("Kolkata", "Chennai"): 140,
+    ("Hyderabad", "Chennai"): 70
+}
 
 # Colonnes catégorielles pour get_dummies
 cat_columns = ['airline', 'source_city', 'departure_time', 'stops', 
